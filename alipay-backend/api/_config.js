@@ -11,8 +11,8 @@ const config = {
   alipayPublicKey: (process.env.ALIPAY_PUBLIC_KEY || '').replace(/\\n/g, '\n'),
 
   // 回调地址 - 部署到 Vercel 后填真实地址
-  notifyUrl: process.env.ALIPAY_NOTIFY_URL || 'https://your-app.vercel.app/api/alipay-callback',
-  returnUrl: process.env.ALIPAY_RETURN_URL || 'https://your-app.vercel.app/payment/success.html',
+  notifyUrl: process.env.ALIPAY_NOTIFY_URL || 'https://code-explain-pay.vercel.app/api/alipay-callback',
+  returnUrl: process.env.ALIPAY_RETURN_URL || 'https://code-explain-pay.vercel.app/payment/success.html',
 
   // 商品信息
   productName: 'CodeExplain Pro',
