@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "alipay-backend/public/**/*",
+      "use": "@vercel/static"
+    },
+    {
       "src": "alipay-backend/api/**/*.js",
       "use": "@vercel/node"
     }
