@@ -1,0 +1,13 @@
+{
+  "name": "code-explain-pay",
+  "version": "1.0.0",
+  "description": "CodeExplain 支付宝支付后端 (Vercel Serverless)",
+  "scripts": {
+    "dev": "node dev.js",
+    "vercel-build": "echo done"
+  },
+  "dependencies": {
+    "alipay-sdk": "^3.2.0",
+    "alipay-sdk-node": "^1.1.2"
+  }
+}

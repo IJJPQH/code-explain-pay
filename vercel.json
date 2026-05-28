@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/api/create-payment", "dest": "/api/create-payment.js" },
+    { "src": "/api/alipay-callback", "dest": "/api/alipay-callback.js" },
+    { "src": "/api/activate", "dest": "/api/activate.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
