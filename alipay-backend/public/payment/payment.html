@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeExplain Pro 会员定价</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #f5f6f8;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ===== 顶部导航 ===== */
+    .header-wrap {
+      border-bottom: 1px solid #e8e8e8;
+      background: white;
+    }
+    .header {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      color: #1a1a1a;
+    }
+    .header .logo svg { width: 28px; height: 28px; }
+    .header .nav { display: flex; gap: 28px; }
+    .header .nav a {
+      text-decoration: none; color: #666; font-size: 14px; font-weight: 500;
+    }
+    .header .nav a:hover { color: #1a1a1a; }
+    .header .nav a.active { color: #1a1a1a; font-weight: 600; }
+
+    /* ===== 主内容 ===== */
+    .page-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 24px 40px;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      text-align: center;
+      margin: 20px 0 32px;
+    }
+    .page-title h1 { font-size: 28px; font-weight: 700; }
+    .page-title p { color: #888; font-size: 14px; margin-top: 6px; }
+
+    /* ===== 套餐卡片横排 ===== */
+    .plan-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .plan-card {
+      flex: 1;
+      max-width: 340px;
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .plan-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .plan-card.featured {
+      border-color: #4a90d9;
+      box-shadow: 0 4px 20px rgba(74,144,217,0.12);
+    }
+
+    .plan-card .badge {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      background: linear-gradient(135deg, #4a90d9, #7c4dff);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 10px;
+    }
+
+    .plan-card .icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #4a90d9 0%, #7c4dff 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 12px;
+      color: white;
+    }
+    .plan-card .icon.free-bg { background: #e0e0e0; color: #666; }
+
+    .plan-card .plan-name {
+      font-size: 18px; font-weight: 700; margin-bottom: 4px;
+    }
+    .plan-card .plan-sub {
+      font-size: 13px; color: #888; margin-bottom: 12px;
+    }
+    .plan-card .price-area {
+      margin: 12px 0;
+    }
+    .plan-card .price-area .symbol { font-size: 16px; color: #999; vertical-align: top; }
+    .plan-card .price-area .amount { font-size: 36px; font-weight: 800; }
+    .plan-card .price-area .amount.free { color: #333; }
+    .plan-card .price-area .unit { font-size: 13px; color: #999; }
+    .plan-card .price-area .save {
+      display: inline-block; background: #ff5252; color: white;
+      font-size: 10px; padding: 1px 8px; border-radius: 6px; margin-left: 4px;
+    }
+
+    .plan-card .divider {
+      border: none; border-top: 1px solid #eee; margin: 16px 0;
+    }
+
+    .plan-card .feature-list {
+      text-align: left;
+    }
+    .plan-card .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 14px;
+      color: #444;
+    }
+    .plan-card .feature-item .check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .plan-card .feature-item .check.green { background: #e8f5e9; color: #2e7d32; }
+    .plan-card .feature-item .check.gray { background: #f0f0f0; color: #bbb; }
+
+    .plan-card .btn-plan {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 18px;
+      border: none;
+      transition: all 0.2s;
+    }
+    .plan-card .btn-plan.btn-free {
+      background: white;
+      border: 2px solid #e0e0e0;
+      color: #333;
+    }
+    .plan-card .btn-plan.btn-free:hover { border-color: #4a90d9; color: #4a90d9; }
+    .plan-card .btn-plan.btn-pro {
+      background: linear-gradient(135deg, #1677ff, #4096ff);
+      color: white;
+    }
+    .plan-card .btn-plan.btn-pro:hover { opacity: 0.9; }
+
+    /* ===== 支付方式区域 ===== */
+    .payment-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .payment-section h3 {
+      font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #333;
+    }
+
+    .pay-method-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 2px solid #1677ff;
+      border-radius: 12px;
+      background: #f0f7ff;
+      max-width: 380px;
+    }
+    .pay-method-row .dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 5px solid #1677ff;
+      flex-shrink: 0;
+    }
+    .pay-method-row .icon { font-size: 24px; }
+    .pay-method-row .name { font-size: 15px; font-weight: 500; flex: 1; }
+    .pay-method-row .tag {
+      font-size: 11px; background: #eee; color: #999;
+      padding: 2px 8px; border-radius: 6px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      align-items: center;
+    }
+    .btn-primary-lg {
+      background: linear-gradient(135deg, #1677ff, #4096ff);
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary-lg:hover { opacity: 0.9; }
+    .btn-secondary-lg {
+      background: white;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .selected-plan-label {
+      font-size: 14px;
+      color: #888;
+    }
+    .selected-plan-label strong { color: #333; }
+
+    /* ===== 确认支付模态框 ===== */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay.show { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      width: 420px;
+      max-width: 90vw;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal .m-header {
+      text-align: center; margin-bottom: 20px;
+    }
+    .modal .m-header h2 { font-size: 18px; font-weight: 700; }
+    .modal .m-header .close-btn {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: none; border: none;
+      font-size: 20px; cursor: pointer; color: #999;
+    }
+    .modal { position: relative; }
+    .modal .close-btn {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: #f0f0f0;
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal .order-info {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .modal .order-info .row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; font-size: 14px;
+    }
+    .modal .order-info .row .lbl { color: #888; }
+    .modal .order-info .row .val { color: #333; font-weight: 500; }
+    .modal .order-info .divider { border: none; border-top: 1px solid #e0e0e0; margin: 8px 0; }
+    .modal .order-info .row.total .lbl { font-weight: 700; }
+    .modal .order-info .row.total .val { font-weight: 700; color: #ff4d4f; font-size: 16px; }
+
+    .modal .pay-amount {
+      text-align: center;
+      margin: 16px 0;
+      font-size: 14px; color: #888;
+    }
+    .modal .pay-amount .big {
+      font-size: 36px; font-weight: 800; color: #1a1a1a;
+    }
+
+    .btn-modal-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #1677ff, #4096ff);
+      color: white; border: none;
+      padding: 14px; border-radius: 12px;
+      font-size: 16px; font-weight: 600; cursor: pointer;
+    }
+
+    /* ===== 支付二维码弹窗 ===== */
+    .modal-pay {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      width: 380px;
+      max-width: 90vw;
+      text-align: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-pay .amt {
+      font-size: 28px; font-weight: 700; margin-bottom: 16px;
+    }
+    .modal-pay .qrcode-box {
+      width: 200px; height: 200px;
+      margin: 0 auto 16px;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid #e8e8e8;
+    }
+    .modal-pay .qrcode-box img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    .modal-pay .btn-confirm {
+      width: 100%;
+      background: linear-gradient(135deg, #1677ff, #4096ff);
+      color: white; border: none;
+      padding: 12px; border-radius: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    .modal-pay .tip {
+      font-size: 12px; color: #999; margin-top: 10px;
+    }
+    .modal-pay .cancel-link {
+      background: none; border: none;
+      color: #999; font-size: 13px; cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* ===== 底部 ===== */
+    .footer {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+      margin-top: 32px;
+    }
+    .footer a { color: #999; text-decoration: none; margin: 0 6px; }
+
+    @media (max-width: 720px) {
+      .plan-row { flex-direction: column; align-items: center; }
+      .plan-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="header-wrap">
+  <div class="header">
+    <a href="./index.html" class="logo">
+      <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4a90d9"/><stop offset="100%" stop-color="#7c4dff"/></linearGradient></defs>
+        <rect x="8" y="8" width="112" height="112" rx="24" fill="url(#lg)"/>
+        <path d="M38 52 L28 64 L38 76" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M58 44 L72 84" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M90 52 L100 64 L90 76" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>CodeExplain</span>
+    </a>
+    <div class="nav">
+      <a href="./index.html">主页</a>
+      <a href="#" class="active">定价</a>
+      <a href="https://github.com/IJJPQH/code-explain-extension" target="_blank">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- 主内容 -->
+<div class="page-wrap">
+
+  <div class="page-title">
+    <h1>选择适合你的方案</h1>
+    <p>免费体验 AI 代码解释，升级 Pro 解锁无限使用</p>
+  </div>
+
+  <!-- 套餐卡片横排 -->
+  <div class="plan-row">
+    <!-- 免费版 -->
+    <div class="plan-card">
+      <div class="icon free-bg">🎁</div>
+      <div class="plan-name">免费版</div>
+      <div class="plan-sub">适合偶尔查阅代码</div>
+      <div class="price-area">
+        <span class="amount free">¥0</span>
+      </div>
+      <hr class="divider">
+      <div class="feature-list">
+        <div class="feature-item"><span class="check green">✓</span>AI 解释代码 · 每日5次</div>
+        <div class="feature-item"><span class="check green">✓</span>代码优化建议 · 每日5次</div>
+        <div class="feature-item"><span class="check green">✓</span>代码问题检查 · 每日5次</div>
+        <div class="feature-item"><span class="check green">✓</span>流式输出实时显示</div>
+        <div class="feature-item"><span class="check gray">—</span>无限使用次数</div>
+        <div class="feature-item"><span class="check gray">—</span>优先技术支持</div>
+      </div>
+      <button class="btn-plan btn-free" onclick="window.location.href='./index.html'">当前方案</button>
+    </div>
+
+    <!-- Pro 月付 -->
+    <div class="plan-card featured" id="card-monthly">
+      <div class="badge">推荐</div>
+      <div class="icon">🌟</div>
+      <div class="plan-name">Pro 月付</div>
+      <div class="plan-sub">适合活跃开发者</div>
+      <div class="price-area">
+        <span class="symbol">¥</span><span class="amount">9.9</span><span class="unit">/月</span>
+      </div>
+      <hr class="divider">
+      <div class="feature-list">
+        <div class="feature-item"><span class="check green">✓</span>AI 解释代码 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>代码优化建议 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>代码问题检查 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>流式输出实时显示</div>
+        <div class="feature-item"><span class="check green">✓</span>无限使用次数</div>
+        <div class="feature-item"><span class="check gray">—</span>优先技术支持</div>
+      </div>
+      <button class="btn-plan btn-pro" onclick="selectPlan('monthly')">选择月付</button>
+    </div>
+
+    <!-- Pro 年付 -->
+    <div class="plan-card" id="card-yearly">
+      <div class="icon">🌟</div>
+      <div class="plan-name">Pro 年付</div>
+      <div class="plan-sub">最划算的选择</div>
+      <div class="price-area">
+        <span class="symbol">¥</span><span class="amount">69</span><span class="unit">/年</span>
+        <span class="save">省42%</span>
+      </div>
+      <hr class="divider">
+      <div class="feature-list">
+        <div class="feature-item"><span class="check green">✓</span>AI 解释代码 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>代码优化建议 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>代码问题检查 · 无限使用</div>
+        <div class="feature-item"><span class="check green">✓</span>流式输出实时显示</div>
+        <div class="feature-item"><span class="check green">✓</span>无限使用次数</div>
+        <div class="feature-item"><span class="check green">✓</span>优先技术支持</div>
+      </div>
+      <button class="btn-plan btn-pro" onclick="selectPlan('yearly')">选择年付</button>
+    </div>
+  </div>
+
+  <!-- 支付方式 + 操作区 -->
+  <div class="payment-section">
+    <h3>💳 支付方式</h3>
+    <div class="pay-method-row">
+      <div class="dot"></div>
+      <span class="icon">💳</span>
+      <span class="name">支付宝</span>
+      <span class="tag">推荐</span>
+    </div>
+
+    <div class="action-row">
+      <div class="selected-plan-label">
+        已选：<strong id="selectedPlanLabel">Pro 月付 ¥9.9</strong>
+      </div>
+      <button class="btn-primary-lg" onclick="openConfirm()">立即支付</button>
+      <button class="btn-secondary-lg" onclick="window.location.href='./index.html'">暂不购买</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  Copyright © 2026 CodeExplain
+  <a href="https://github.com/IJJPQH/code-explain-extension" target="_blank">GitHub</a>
+  <a href="#">联系客服</a>
+</div>
+
+<!-- ===== 确认支付弹窗 ===== -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeConfirm()">✕</button>
+
+    <div class="m-header">
+      <h2>确认支付</h2>
+    </div>
+
+    <div class="pay-amount">
+      支付金额<br>
+      <span class="big">¥<span id="modalAmount">9.9</span></span>
+    </div>
+    <div style="text-align:center;font-size:13px;color:#888;margin-bottom:12px;">
+      支付方式：支付宝
+    </div>
+
+    <div class="order-info">
+      <div class="row">
+        <span class="lbl">商品</span>
+        <span class="val" id="modalProduct">CodeExplain Pro 月付</span>
+      </div>
+      <div class="row">
+        <span class="lbl">金额</span>
+        <span class="val" id="modalSubtotal">¥9.9</span>
+      </div>
+      <hr class="divider">
+      <div class="row total">
+        <span class="lbl">合计</span>
+        <span class="val" id="modalTotal">¥9.9</span>
+      </div>
+    </div>
+
+    <button class="btn-modal-primary" onclick="showPayQR()">确认支付</button>
+  </div>
+</div>
+
+<!-- ===== 支付二维码弹窗 ===== -->
+<div class="overlay" id="qrOverlay">
+  <div class="modal-pay">
+    <div class="amt">¥<span id="qrAmount">9.9</span></div>
+    <div class="qrcode-box">
+      <img src="qrcode.png" alt="支付宝收款码">
+    </div>
+    <button class="btn-confirm" onclick="payDone()">✅ 我已支付</button>
+    <div class="tip">请用支付宝扫码完成支付</div>
+    <div><button class="cancel-link" onclick="closeQR()">取消支付</button></div>
+
+    <!-- 成功状态（隐藏） -->
+    <div id="successState" style="display:none;text-align:center;padding:10px 0;">
+      <div style="width:56px;height:56px;background:#4caf50;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:white;margin:0 auto 12px;">✓</div>
+      <h2 style="font-size:18px;margin-bottom:4px;">🎉 支付成功</h2>
+      <p style="font-size:14px;color:#888;margin-bottom:16px;">Pro 会员已激活，感谢支持！</p>
+      <button class="btn-confirm" onclick="gotoExtension()">🔙 回到插件激活</button>
+      <button class="btn-confirm" onclick="window.location.href='./index.html'" style="margin-top:8px;background:white;color:#1677ff;border:1px solid #1677ff;">回到首页</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== 支付宝支付配置 =====
+  const API_BASE = 'https://code-explain-pay.vercel.app';
+
+  // 从 URL 读取参数
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlDeviceId = urlParams.get('deviceId');
+  const urlPlan = urlParams.get('plan');
+
+  let currentPlan = urlPlan === 'pro_yearly' ? 'yearly' : 'monthly';
+  const PLANS = {
+    monthly: { name: 'Pro 月付', price: 9.9, label: 'Pro 月付 ¥9.9', days: 30 },
+    yearly:  { name: 'Pro 年付', price: 69,  label: 'Pro 年付 ¥69', days: 365 }
+  };
+
+  // 生成设备ID（优先用 URL 参数，即来自插件）
+  function getDeviceId() {
+    if (urlDeviceId) return urlDeviceId;
+    let did = localStorage.getItem('ce_device_id');
+    if (!did) {
+      did = 'CE_' + Math.random().toString(36).substring(2, 10)
+        + '_' + Date.now().toString(36);
+      localStorage.setItem('ce_device_id', did);
+    }
+    return did;
+  }
+
+  // 突出显示选中的套餐
+  function selectPlan(plan) {
+    currentPlan = plan;
+    document.querySelectorAll('.plan-card.featured').forEach(c => c.classList.remove('featured'));
+    document.getElementById('card-' + plan).classList.add('featured');
+    document.getElementById('selectedPlanLabel').textContent = PLANS[plan].label;
+  }
+
+  // 打开确认弹窗
+  function openConfirm() {
+    const info = PLANS[currentPlan];
+    document.getElementById('modalAmount').textContent = info.price;
+    document.getElementById('modalProduct').textContent = 'CodeExplain ' + info.name;
+    document.getElementById('modalSubtotal').textContent = '¥' + info.price;
+    document.getElementById('modalTotal').textContent = '¥' + info.price;
+    document.getElementById('confirmOverlay').classList.add('show');
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+  }
+
+  // 调支付宝下单
+  async function showPayQR() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+    const info = PLANS[currentPlan];
+    const deviceId = getDeviceId();
+
+    try {
+      // 显示加载状态
+      document.getElementById('qrOverlay').classList.add('show');
+      document.querySelector('.modal-pay .amt').innerHTML = '⏳ 正在跳转...';
+      document.querySelector('.modal-pay .qrcode-box').style.display = 'none';
+      document.querySelector('.modal-pay .btn-confirm').style.display = 'none';
+      document.querySelector('.modal-pay .tip').style.display = 'none';
+      document.querySelector('.modal-pay .cancel-link').style.display = 'none';
+
+      // 调后端创建订单
+      const resp = await fetch(API_BASE + '/api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: currentPlan,
+          deviceId: deviceId,
+        }),
+      });
+      const data = await resp.json();
+
+      if (data.success && data.payUrl) {
+        // 跳转到支付宝收银台
+        window.location.href = data.payUrl;
+      } else {
+        alert('下单失败: ' + (data.error || '未知错误'));
+        closeQR();
+      }
+
+    } catch (err) {
+      alert('网络错误，请稍后重试: ' + err.message);
+      closeQR();
+    }
+  }
+
+  function closeQR() {
+    document.getElementById('qrOverlay').classList.remove('show');
+  }
+
+  // 支付成功（显示在支付成功页）
+  function payDone() {
+    document.querySelector('.modal-pay .amt').style.display = 'none';
+    document.querySelector('.modal-pay .qrcode-box').style.display = 'none';
+    document.querySelector('.modal-pay .btn-confirm').style.display = 'none';
+    document.querySelector('.modal-pay .tip').style.display = 'none';
+    document.querySelector('.modal-pay .cancel-link').style.display = 'none';
+    document.getElementById('successState').style.display = 'block';
+  }
+
+  // 回到插件页面（用自定义协议尝试唤起）
+  function gotoExtension() {
+    // 先尝试唤起扩展管理页（兼容 Chrome 插件）
+    alert('请在插件弹窗中点击「刷新状态」即可激活 Pro');
+    window.close();
+  }
+</script>
+
+</body>
+</html>
