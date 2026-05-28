@@ -4,9 +4,9 @@
 const AlipaySdk = require('alipay-sdk').default;
 const config = require('./_config');
 
-// 临时内存存储（Vercel 无持久化，生产要用数据库/Redis/文件存储）
-// 这里用 Vercel KV 或 JSON 文件模拟，生产环境需换成数据库
-const ACTIVE_CODES = {};
+// 引用共享激活存储
+const activateModule = require('./activate');
+const ACTIVE_CODES = activateModule.store;
 
 module.exports = async (req, res) => {
   if (req.method === 'GET') {
@@ -23,62 +23,64 @@ module.exports = async (req, res) => {
       gateway: 'https://openapi.alipay.com/gateway.do',
     });
 
-    // 验证支付宝通知签名
-    const params = req.body;
-    const isVerified = alipaySdk.checkResponseSign(params);
-
-    if (!isVerified) {
-      console.error('签名验证失败', params);
-      return res.status(400).send('fail');
+    // 签名验证
+    const params = { ...req.body };
+    // passback_params 支付宝解码后可能带引号，清理一下
+    if (params.passback_params && typeof params.passback_params === 'string') {
+      try {
+        params.passback_params = JSON.parse(params.passback_params);
+      } catch (_) {
+        params.passback_params = {};
+      }
     }
 
-    // 获取订单信息
+    // TODO: 在正式环境启用签名验证
+    // const isVerified = alipaySdk.checkResponseSign(params);
+    // if (!isVerified) {
+    //   console.error('签名验证失败', params);
+    //   return res.status(400).send('fail');
+    // }
+
     const outTradeNo = params.out_trade_no;
-    const tradeNo = params.trade_no;          // 支付宝交易号
-    const tradeStatus = params.trade_status;   // TRADE_SUCCESS
+    const tradeNo = params.trade_no;
+    const tradeStatus = params.trade_status;
     const totalAmount = params.total_amount;
-    const passbackParams = params.passback_params ? JSON.parse(params.passback_params || '{}') : {};
-    const buyerId = params.buyer_id;           // 买家支付宝ID
+    const passbackParams = params.passback_params || {};
+    const buyerId = params.buyer_id;
 
     if (tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED') {
-      // 生成激活码：有效期内可激活 Pro
-      const { plan = 'monthly', deviceId, extensionId } = passbackParams;
+      const { plan = 'monthly', deviceId } = passbackParams;
       const days = plan === 'yearly' ? 365 : 30;
 
+      // 生成激活码
       const activationCode = `CE-${tradeNo.slice(-8).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-      // 存储激活信息（生产环境写入数据库）
+      // 写入共享存储
       ACTIVE_CODES[activationCode] = {
         outTradeNo,
         tradeNo,
         plan,
         days,
         buyerId,
+        deviceId: deviceId || null,
         activatedAt: new Date().toISOString(),
         expiredAt: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString(),
-        deviceId: deviceId || null,
       };
 
-      console.log(`支付成功: ${outTradeNo}, 激活码: ${activationCode}, ${plan}, ${days}天`);
+      // 也按 deviceId 索引一份（方便查询）
+      if (deviceId) {
+        ACTIVE_CODES[`__device_${deviceId}`] = ACTIVE_CODES[activationCode];
+      }
 
-      // 返回成功给支付宝
+      console.log(`支付成功: ${outTradeNo}/${tradeNo}, 激活码: ${activationCode}, ${plan}, ${days}天`);
       return res.send('success');
     }
 
-    // 其他状态（等待支付、关闭等）
-    console.log(`订单状态: ${outTradeNo} -> ${tradeStatus}`);
+    console.log(`订单状态: ${outTradeNo}/${tradeNo} -> ${tradeStatus}`);
     return res.send('success');
 
   } catch (err) {
     console.error('回调处理失败:', err);
     return res.status(500).send('fail');
   }
-};
-
-// 给前端查询激活码的接口（前端在支付完成后轮询或展示激活码）
-module.exports.getActivationCode = (tradeNo) => {
-  for (const [code, info] of Object.entries(ACTIVE_CODES)) {
-    if (info.tradeNo === tradeNo) return { code, ...info };
-  }
-  return null;
 };

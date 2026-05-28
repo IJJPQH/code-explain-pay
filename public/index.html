@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>CodeExplain - AI 代码解释器 | 选中代码，AI 用中文解释</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #f7f8fa;
+      color: #1a1a1a;
+    }
+
+    .page-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== 顶部导航 ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .header .logo img {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+    }
+    .header .nav {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+    }
+    .header .nav a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+    }
+    .header .nav a:hover { color: #1a1a1a; }
+    .header .nav a.active { color: #1a1a1a; font-weight: 600; }
+
+    /* ===== 主内容 ===== */
+    .main { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+    /* 应用名 */
+    .app-name {
+      text-align: center;
+      margin-top: 60px;
+    }
+    .app-name h1 {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .app-name h1 .highlight {
+      background: linear-gradient(135deg, #4a90d9, #7c4dff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* 副标题 */
+    .slogan {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .slogan h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #333;
+      line-height: 1.5;
+    }
+    .slogan h2 .accent {
+      color: #ff9000;
+    }
+
+    /* 功能简述 */
+    .desc {
+      text-align: center;
+      color: #888;
+      font-size: 15px;
+      line-height: 1.8;
+      margin-top: 12px;
+    }
+
+    /* 按钮 */
+    .btn-area {
+      text-align: center;
+      margin-top: 32px;
+    }
+    .btn-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4a90d9 0%, #7c4dff 100%);
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(74, 144, 217, 0.3);
+    }
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(74, 144, 217, 0.4);
+    }
+    .btn-start svg {
+      width: 18px;
+      height: 18px;
+    }
+    .btn-start .arrow {
+      transition: transform 0.2s;
+    }
+    .btn-start:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* 产品预览图 */
+    .preview-area {
+      margin-top: 40px;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 20px;
+    }
+    .preview-area img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+
+    /* ===== 底部 ===== */
+    .footer {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: #bbb;
+      border-top: 1px solid #eee;
+      margin-top: 20px;
+    }
+    .footer a {
+      color: #999;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    /* 闪电图标 */
+    .lightning-icon {
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* 微信提示 */
+    .wx-guide {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .wx-guide .wx-steps {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      color: #333;
+      max-width: 360px;
+      margin: 60px auto;
+    }
+    .wx-guide .wx-steps h3 { font-size: 18px; margin-bottom: 16px; }
+    .wx-guide .wx-steps p { font-size: 14px; color: #666; margin-bottom: 10px; }
+
+    @media (max-width: 600px) {
+      .app-name h1 { font-size: 32px; }
+      .slogan h2 { font-size: 20px; }
+      .header .nav { gap: 14px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 微信内打开提示 -->
+<div class="wx-guide" id="wxGuide">
+  <div class="wx-steps">
+    <h3>📱 请在浏览器中打开</h3>
+    <p>1. 点击右上角 <strong>···</strong></p>
+    <p>2. 选择「在浏览器中打开」</p>
+    <p>3. 下载安装 CodeExplain</p>
+  </div>
+</div>
+
+<div class="page-wrap" id="mainPage">
+
+  <!-- 顶部 -->
+  <div class="header">
+    <div class="logo">
+      <svg width="30" height="30" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4a90d9"/>
+            <stop offset="100%" stop-color="#7c4dff"/>
+          </linearGradient>
+        </defs>
+        <rect x="8" y="8" width="112" height="112" rx="24" ry="24" fill="url(#lg)"/>
+        <path d="M38 52 L28 64 L38 76" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M58 44 L72 84" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M90 52 L100 64 L90 76" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>CodeExplain</span>
+    </div>
+    <div class="nav">
+      <a href="#" class="active">主页</a>
+      <a href="./payment/payment.html">定价</a>
+      <a href="https://github.com/IJJPQH/code-explain-extension" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main">
+    <div class="app-name">
+      <h1>Code<span class="highlight">Explain</span></h1>
+    </div>
+
+    <div class="slogan">
+      <h2>选中代码 &nbsp;<span class="lightning-icon">⚡</span>&nbsp; <span class="accent">AI</span> 用中文解释</h2>
+      <h2>专为 <span class="accent">Android 开发者</span> 打造</h2>
+    </div>
+
+    <div class="desc">
+      Chrome 扩展 · 开箱即用 · 无需配置 API Key<br>
+      支持 Kotlin / Java / XML · 流式输出实时显示
+    </div>
+
+    <div class="btn-area">
+      <button class="btn-start" onclick="startAction()">
+        <svg viewBox="0 0 24 24">
+          <path fill="currentColor" d="M11.11 23a1 1 0 0 1-.34-.06a1 1 0 0 1-.65-1.05l.77-7.09H5a1 1 0 0 1-.83-1.56l7.89-11.8a1 1 0 0 1 1.17-.38a1 1 0 0 1 .65 1l-.77 7.14H19a1 1 0 0 1 .83 1.56l-7.89 11.8a1 1 0 0 1-.83.44"/>
+        </svg>
+        <span>免费使用</span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <!-- 产品预览截图占位 -->
+    <div class="preview-area">
+      <svg width="680" height="380" viewBox="0 0 680 380" style="max-width:100%;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.08);border:1px solid #eee;background:#fff;">
+        <rect width="680" height="380" fill="#f8f9fa" rx="8"/>
+        <!-- 浏览器窗口 -->
+        <rect x="0" y="0" width="680" height="36" fill="#e8eaed" rx="8"/>
+        <rect x="0" y="30" width="680" height="6" fill="#e8eaed"/>
+        <circle cx="18" cy="18" r="5" fill="#ff5f57"/>
+        <circle cx="34" cy="18" r="5" fill="#ffbd2e"/>
+        <circle cx="50" cy="18" r="5" fill="#28c840"/>
+        <!-- 地址栏 -->
+        <rect x="120" y="10" width="320" height="16" rx="8" fill="#fff"/>
+        <text x="280" y="22" font-size="10" fill="#999" text-anchor="middle">github.com/android/...</text>
+        <!-- 代码区域 -->
+        <rect x="30" y="52" width="620" height="16" rx="4" fill="#e0e0e0"/>
+        <rect x="30" y="76" width="480" height="16" rx="4" fill="#e0e0e0"/>
+        <rect x="30" y="100" width="560" height="16" rx="4" fill="#d0d0d0"/>
+        <rect x="30" y="124" width="300" height="16" rx="4" fill="#e0e0e0"/>
+        <!-- 选中的代码高亮 -->
+        <rect x="30" y="148" width="400" height="40" rx="4" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+        <!-- 浮窗 -->
+        <rect x="460" y="120" width="190" height="180" rx="10" fill="white" stroke="#4a90d9" stroke-width="1" filter="url(#shadow)"/>
+        <rect x="460" y="120" width="190" height="36" rx="10" fill="#4a90d9"/>
+        <text x="530" y="143" font-size="11" fill="white" text-anchor="middle" font-weight="600">🤖 AI 解释</text>
+        <text x="476" y="175" font-size="10" fill="#333">这段代码定义了一个</text>
+        <text x="476" y="193" font-size="10" fill="#333">Composable 函数...</text>
+        <rect x="476" y="210" width="100" height="8" rx="4" fill="#e0e0e0"/>
+        <rect x="476" y="226" width="130" height="8" rx="4" fill="#e0e0e0"/>
+        <rect x="476" y="242" width="80" height="8" rx="4" fill="#e0e0e0"/>
+        <!-- 右键菜单 -->
+        <rect x="120" y="156" width="180" height="96" rx="8" fill="white" stroke="#ddd" stroke-width="1"/>
+        <rect x="130" y="164" width="160" height="22" rx="4" fill="#f0f7ff"/>
+        <text x="140" y="180" font-size="11" fill="#333">🤖 AI 解释这段代码</text>
+        <rect x="130" y="190" width="160" height="22" rx="4" fill="transparent"/>
+        <text x="140" y="206" font-size="11" fill="#333">🔧 优化这段代码</text>
+        <rect x="130" y="216" width="160" height="22" rx="4" fill="transparent"/>
+        <text x="140" y="232" font-size="11" fill="#333">🐛 检查代码问题</text>
+        <defs>
+          <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.1"/>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <span>Copyright © 2026 CodeExplain</span>
+    <a href="https://github.com/IJJPQH/code-explain-extension" target="_blank">GitHub</a>
+    <a href="./payment/payment.html">定价</a>
+    <a href="#">联系客服</a>
+  </div>
+</div>
+
+<script>
+  // 微信浏览器检测
+  if (/MicroMessenger/i.test(navigator.userAgent)) {
+    document.getElementById('wxGuide').style.display = 'block';
+  }
+
+  function startAction() {
+    window.location.href = './payment/payment.html';
+  }
+</script>
+
+</body>
+</html>

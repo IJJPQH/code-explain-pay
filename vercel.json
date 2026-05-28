@@ -7,9 +7,7 @@
     }
   ],
   "routes": [
-    { "src": "/api/create-payment", "dest": "/api/create-payment.js" },
-    { "src": "/api/alipay-callback", "dest": "/api/alipay-callback.js" },
-    { "src": "/api/activate", "dest": "/api/activate.js" },
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
