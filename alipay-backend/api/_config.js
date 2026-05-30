@@ -2,7 +2,7 @@
 // 部署时将这些值设为 Vercel 环境变量
 const config = {
   // 应用 ID
-  appId: process.env.ALIPAY_APP_ID || '2021006154644919',
+  appId: process.env.ALIPAY_APP_ID || '2021006156660990',
 
   // 商户私钥 (PKCS8 格式，需要把 \n 替换为真实换行)
   merchantPrivateKey: (process.env.ALIPAY_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
